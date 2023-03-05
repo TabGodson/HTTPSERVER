@@ -5,7 +5,7 @@
 #include <SFML/Network.hpp>
 
 void handleRequest(sf::TcpSocket& client) {
-    // ´Ó¿Í»§¶Ë¶ÁÈ¡ HTTP ÇëÇó
+    // ï¿½Ó¿Í»ï¿½ï¿½Ë¶ï¿½È¡ HTTP ï¿½ï¿½ï¿½ï¿½
     std::string requestString;
     char buffer[1024];
     std::size_t received = 0;
@@ -16,7 +16,7 @@ void handleRequest(sf::TcpSocket& client) {
         }
     }
 
-    // ½âÎö HTTP ÇëÇóÍ·
+    // ï¿½ï¿½ï¿½ï¿½ HTTP ï¿½ï¿½ï¿½ï¿½Í·
     std::istringstream iss(requestString);
     std::string method, uri, version;
     iss >> method >> uri >> version;
@@ -28,18 +28,18 @@ void handleRequest(sf::TcpSocket& client) {
         }
     }
 
-    // ´ÓÇëÇóÌåÖÐ¶ÁÈ¡Êý¾Ý
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½È¡ï¿½ï¿½ï¿½ï¿½
     std::string requestBody;
     if (!contentLength.empty()) {
         std::size_t bodySize = std::stoi(contentLength);
         requestBody.resize(bodySize);
         if (client.receive(&requestBody, bodySize, received) != sf::Socket::Done) {
-            // ¶ÁÈ¡ÇëÇóÌåÊ§°Ü
+            // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½
             return;
         }
     }
 
-    // ¹¹Ôì HTTP ÏìÓ¦
+    // ï¿½ï¿½ï¿½ï¿½ HTTP ï¿½ï¿½Ó¦
     std::ostringstream oss;
     std::ostringstream osss;
     std::string htmlpage;
@@ -56,13 +56,22 @@ void handleRequest(sf::TcpSocket& client) {
     oss << "\r\n";
     oss << osss.str();
 
-    // ·¢ËÍ HTTP ÏìÓ¦
+    // ï¿½ï¿½ï¿½ï¿½ HTTP ï¿½ï¿½Ó¦
     std::string responseString = oss.str();
     std::cout << responseString << std::endl;
     client.send(responseString.c_str(), responseString.size());
 }
 
 int main() {
-    
+    sf::TcpListener listener;
+  listener.listen(8080);
+
+  // ç­‰å¾…è¿žæŽ¥å¹¶å¤„ç†è¯·æ±‚
+  while (true) {
+    sf::TcpSocket client;
+    listener.accept(client);
+    handleRequest(client);
+  }
+
     return 0;
 }
